@@ -1,6 +1,10 @@
 import { Command, flags } from '@oclif/command';
 
-import { queryDependencies } from '../api/command';
+import {
+  hasBrokenDependencyPredicate,
+  queryDependencies,
+  isDevDependencyPredicate,
+} from '../api/command';
 
 export default class Upgrade extends Command {
   static description = 'upgrade npm dependencies'
@@ -24,7 +28,10 @@ export default class Upgrade extends Command {
     this.log('Upgrading');
 
     const dependencies = queryDependencies();
+    const brokenDependencies = dependencies.filter(hasBrokenDependencyPredicate).length;
 
-    this.log(`Found ${dependencies.length} depdencies (${dependencies.filter(d => d.isDev).length} dev).`);
+    this.log(`Found ${dependencies.length} depdencies  (${
+      dependencies.filter(isDevDependencyPredicate).length} dev${
+      brokenDependencies ? `, ${brokenDependencies} broken` : ''}).`);
   }
 }

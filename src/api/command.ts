@@ -11,22 +11,34 @@ type Package = {
   devDependencies: Record<string, string>;
 };
 
+type Version = Semver | null;
+
 export interface Dep {
   name: string;
-  version: Semver;
+  version: Version;
   isDev: boolean;
-  latestMajor?: Semver;
-  latestMinor?: Semver;
-  latestPatch?: Semver;
+  hasBrokenVersion: boolean;
+  latestMajor?: Version;
+  latestMinor?: Version;
+  latestPatch?: Version;
 }
 
 const getDependencyFactory = (isDev: boolean) => (dependencies: Record<string, string>): Dep[] => Object
 .keys(dependencies)
-.map(name  => ({
-  name,
-  isDev,
-  version: coerce(dependencies[name])!,
-}));
+.map(name  => {
+  const version = coerce(dependencies[name]);
+
+  return {
+    name,
+    isDev,
+    version,
+    hasBrokenVersion: version === null,
+  };
+});
+
+export const isDevDependencyPredicate = (d: Dep) => d.isDev;
+
+export const hasBrokenDependencyPredicate = (d: Dep) => d.hasBrokenVersion;
 
 export const queryDependencies = (): Dep[] => {
   const packagePath = resolve('./package.json');
