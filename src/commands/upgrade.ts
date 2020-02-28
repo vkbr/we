@@ -5,6 +5,7 @@ import {
   hasBrokenDependencyPredicate,
   isDevDependencyPredicate,
   queryDependencies,
+  promptEligibileVersion,
 } from '../api/command';
 
 export default class Upgrade extends Command {
@@ -22,10 +23,13 @@ export default class Upgrade extends Command {
       options: ['major', 'minor', 'patch'],
       default: 'minor',
     }),
+    registry: flags.string({
+      default: 'http://registry.npmjs.org/',
+    }),
   };
 
   async run() {
-    // const {args, flags} = this.parse(Upgrade)
+    const { flags } = this.parse(Upgrade);
     this.log('Upgrading');
 
     const dependencies = queryDependencies();
@@ -35,8 +39,8 @@ export default class Upgrade extends Command {
       dependencies.filter(isDevDependencyPredicate).length} dev${
       brokenDependencies ? `, ${brokenDependencies} broken` : ''}).`);
 
-    await enrichLatest(dependencies);
+    await enrichLatest(dependencies, flags.registry);
 
-    this.log(dependencies.map(dep => `${dep.name}: ${dep.version}|${dep.latestMajor}/${dep.latestMinor}/${dep.latestPatch}`).join('\n'));
+    promptEligibileVersion(dependencies, flags.interactive, flags.mode, this.log);
   }
 }

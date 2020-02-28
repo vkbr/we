@@ -1,10 +1,14 @@
 import { existsSync } from 'fs';
 import { resolve } from 'path';
+import { prompt } from 'inquirer';
 import { default as axios } from 'axios';
+import chalk from 'chalk';
 import concurrent from 'con-task-runner';
 import coerce from 'semver/functions/coerce';
 import gt from 'semver/functions/gt';
 import Semver from 'semver/classes/semver';
+
+type UpgradePrompt = 'proceed' | 'prompt-each' | 'abort';
 
 type Package = {
   name: string;
@@ -20,13 +24,14 @@ type RegistryInfo = {
   versions: Record<string, RegistryInfo>;
 };
 
-type Version = Semver | null;
+type Version = Semver;
 
 export interface Dep {
   name: string;
   version: Version;
   isDev: boolean;
   hasBrokenVersion: boolean;
+  eligibleVersion?: Version;
   latestMajor?: Version;
   latestMinor?: Version;
   latestPatch?: Version;
@@ -37,7 +42,7 @@ const semanticVersionExp = /^(\d\.){2}\d$/;
 const getDependencyFactory = (isDev: boolean) => (dependencies: Record<string, string>): Dep[] => Object
 .keys(dependencies)
 .map(name  => {
-  const version = coerce(dependencies[name]);
+  const version = coerce(dependencies[name])!;
 
   return {
     name,
@@ -66,10 +71,10 @@ export const queryDependencies = (): Dep[] => {
   ];
 };
 
-export const enrichLatest = async (deps: Dep[], _?: string): Promise<void> => {
+export const enrichLatest = async (deps: Dep[], registry: string): Promise<void> => {
   const taskRunner = concurrent({ concurrency: 5, limit: deps.length });
 
-  const client = axios.create({ baseURL: 'http://registry.npmjs.org/', responseType: 'json' });
+  const client = axios.create({ baseURL: registry, responseType: 'json' });
 
   await taskRunner(async idx => {
     const dep = deps[idx];
@@ -83,12 +88,51 @@ export const enrichLatest = async (deps: Dep[], _?: string): Promise<void> => {
 
       dep.latestMajor = versions
       .reduce((prev: Semver, next: Semver) => gt(next, prev) ? next : prev, dep.version!);
+
       dep.latestMinor = versions
       .reduce((prev: Semver, next: Semver) => next.major === prev.major && gt(next, prev) ? next : prev, dep.version!);
+
       dep.latestPatch = versions
       .reduce((prev: Semver, next: Semver) => next.major === prev.major && next.minor === prev.minor && next.patch > prev.patch ? next : prev, dep.version!);
     } else {
       throw new Error('Failed to fetch version info.');
     }
   });
+};
+
+export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: string, logger: (...msg: string[]) => void): Promise<UpgradePrompt> => {
+  const messages = deps.map(dep => {
+    const eligibleVersion = type === 'pach' ?
+      dep.latestPatch :
+      type === 'major' ?
+        dep.latestMajor : dep.latestMinor;
+
+    dep.eligibleVersion = eligibleVersion;
+    const hasChange = eligibleVersion!.compare(dep.version);
+
+    if (!hasChange) return null;
+
+    return `${chalk.bold(dep.name)}: ${chalk.red(dep.version)} -> ${chalk.green(eligibleVersion)}`;
+  })
+  .filter(msg => msg !== null);
+
+  logger(`\n${messages.join('\n')}`);
+
+  if (!interactive) {
+    logger(chalk.blue('Upgrading above changes.'));
+    return 'proceed';
+  }
+
+  const response = await prompt({
+    name: 'choice',
+    message: chalk.blue('Proceed with these upgrades'),
+    type: 'list',
+    choices: [
+      { name: `${chalk.bold('Proceed')}${chalk.gray(' make all upgrade')}`, value: 'proceed' },
+      { name: `${chalk.bold('Prompt each')}${chalk.gray(' prompt before each package')}`, value: 'prompt-each' },
+      { name: chalk.bold('Abort') },
+    ],
+  }) as { choice: UpgradePrompt };
+
+  return response.choice;
 };
