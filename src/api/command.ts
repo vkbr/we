@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { prompt } from 'inquirer';
 import { default as axios } from 'axios';
 import chalk from 'chalk';
+import cliUx from 'cli-ux';
 import concurrent from 'con-task-runner';
 import coerce from 'semver/functions/coerce';
 import gt from 'semver/functions/gt';
@@ -75,6 +76,13 @@ export const enrichLatest = async (deps: Dep[], registry: string): Promise<void>
   const taskRunner = concurrent({ concurrency: 5, limit: deps.length });
 
   const client = axios.create({ baseURL: registry, responseType: 'json' });
+  const progress = cliUx.progress({
+    format: 'Enquiring  packages | {bar} | {value}/{total}',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+  });
+
+  progress.start(deps.length, 0);
 
   await taskRunner(async idx => {
     const dep = deps[idx];
@@ -94,10 +102,14 @@ export const enrichLatest = async (deps: Dep[], registry: string): Promise<void>
 
       dep.latestPatch = versions
       .reduce((prev: Semver, next: Semver) => next.major === prev.major && next.minor === prev.minor && next.patch > prev.patch ? next : prev, dep.version!);
+
+      progress.increment();
     } else {
       throw new Error('Failed to fetch version info.');
     }
   });
+
+  progress.stop();
 };
 
 export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: string, logger: (...msg: string[]) => void): Promise<UpgradePrompt> => {
