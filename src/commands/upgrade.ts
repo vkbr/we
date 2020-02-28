@@ -1,9 +1,10 @@
 import { Command, flags } from '@oclif/command';
 
 import {
+  enrichLatest,
   hasBrokenDependencyPredicate,
-  queryDependencies,
   isDevDependencyPredicate,
+  queryDependencies,
 } from '../api/command';
 
 export default class Upgrade extends Command {
@@ -33,5 +34,9 @@ export default class Upgrade extends Command {
     this.log(`Found ${dependencies.length} depdencies  (${
       dependencies.filter(isDevDependencyPredicate).length} dev${
       brokenDependencies ? `, ${brokenDependencies} broken` : ''}).`);
+
+    await enrichLatest(dependencies);
+
+    this.log(dependencies.map(dep => `${dep.name}: ${dep.version}|${dep.latestMajor}/${dep.latestMinor}/${dep.latestPatch}`).join('\n'));
   }
 }

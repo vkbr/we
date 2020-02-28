@@ -406,6 +406,13 @@ astral-regex@^1.0.0:
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha1-bIw/uCfdQ+45GPJ7gngqt2WKb9k=
 
+axios@^0.19.2:
+  version "0.19.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
+  integrity sha1-PqNsXYgY0NX4qKl6bTa4bNwAyyc=
+  dependencies:
+    follow-redirects "1.5.10"
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
@@ -612,6 +619,11 @@ commondir@^1.0.1:
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
+con-task-runner@^1.0.1:
+  version "1.0.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/con-task-runner/-/con-task-runner-1.0.1.tgz#5e40aaf2f09bcf2577761d174612443b54a4b648"
+  integrity sha1-XkCq8vCbzyV3dh0XRhJEO1Sktkg=
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -659,7 +671,7 @@ cross-spawn@^6.0.0, cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-debug@3.1.0:
+debug@3.1.0, debug@=3.1.0:
   version "3.1.0"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   integrity sha1-W7WgZyYotkFJVmuhaBnmFRjGcmE=
@@ -1085,6 +1097,13 @@ flatted@^2.0.0:
   version "2.0.1"
   resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha1-aeV8qo8OrLwoHS4stFjUb9tEngg=
+
+follow-redirects@1.5.10:
+  version "1.5.10"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
+  integrity sha1-e3qfmuov3/NnhqlP9kPtB/T/Xio=
+  dependencies:
+    debug "=3.1.0"
 
 foreground-child@^1.5.6:
   version "1.5.6"
