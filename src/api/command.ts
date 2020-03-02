@@ -8,8 +8,10 @@ import concurrent from 'con-task-runner';
 import coerce from 'semver/functions/coerce';
 import gt from 'semver/functions/gt';
 import Semver from 'semver/classes/semver';
+import { spawnSync } from 'child_process';
 
 type UpgradePrompt = 'proceed' | 'prompt-each' | 'abort';
+type Logger = (...msg: string[]) => void;
 
 type Package = {
   name: string;
@@ -112,7 +114,11 @@ export const enrichLatest = async (deps: Dep[], registry: string): Promise<void>
   progress.stop();
 };
 
-export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: string, logger: (...msg: string[]) => void): Promise<UpgradePrompt> => {
+function getUpgradeRowMessage() {
+
+}
+
+export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: string, logger: Logger): Promise<UpgradePrompt> => {
   const messages = deps.map(dep => {
     const eligibleVersion = type === 'pach' ?
       dep.latestPatch :
@@ -120,7 +126,7 @@ export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, 
         dep.latestMajor : dep.latestMinor;
 
     dep.eligibleVersion = eligibleVersion;
-    const hasChange = eligibleVersion!.compare(dep.version);
+    const hasChange = eligibleVersion!.compare(dep.version) !== 0;
 
     if (!hasChange) return null;
 
@@ -142,9 +148,42 @@ export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, 
     choices: [
       { name: `${chalk.bold('Proceed')}${chalk.gray(' make all upgrade')}`, value: 'proceed' },
       { name: `${chalk.bold('Prompt each')}${chalk.gray(' prompt before each package')}`, value: 'prompt-each' },
-      { name: chalk.bold('Abort') },
+      { name: chalk.bold('Abort'), value: 'abort' },
     ],
   }) as { choice: UpgradePrompt };
 
   return response.choice;
 };
+
+export async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger: Logger) {
+  if (interactiveResponse === 'abort') {
+    return;
+  }
+
+  let filteredUpgrade = deps;
+
+  if (interactiveResponse === 'prompt-each') {
+    const response = await prompt({
+      name: 'choice',
+      message: 'Select',
+      type: 'checkbox',
+      choices: deps
+      .filter(dep => dep.eligibleVersion?.compare(dep.version) !== 0)
+      .map(dep => ({
+        name: `${chalk.bold(dep.name)}: ${chalk.red(dep.version)} -> ${chalk.green(dep.eligibleVersion)}`,
+        value: dep.name,
+      })),
+    });
+
+    const selectedPackages = new Set(response.choice);
+
+    filteredUpgrade = deps.filter(dep => selectedPackages.has(dep.name));
+  }
+
+  if (filteredUpgrade.length === 0) {
+    logger('No package to upgrade');
+    return;
+  }
+
+  spawnSync('yarn', ['add', ...filteredUpgrade.map(pkg => `${pkg.name}@${pkg.eligibleVersion}`)]);
+}

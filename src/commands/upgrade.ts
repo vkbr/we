@@ -6,6 +6,7 @@ import {
   isDevDependencyPredicate,
   queryDependencies,
   promptEligibileVersion,
+  doUpgrade,
 } from '../api/command';
 
 export default class Upgrade extends Command {
@@ -41,6 +42,8 @@ export default class Upgrade extends Command {
 
     await enrichLatest(dependencies, flags.registry);
 
-    promptEligibileVersion(dependencies, flags.interactive, flags.mode, this.log);
+    const upgradePrompt = await promptEligibileVersion(dependencies, flags.interactive, flags.mode, this.log);
+
+    await doUpgrade(upgradePrompt, dependencies, this.log);
   }
 }
