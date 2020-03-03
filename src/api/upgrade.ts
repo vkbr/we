@@ -34,6 +34,7 @@ export interface Dep {
   version: Version;
   isDev: boolean;
   hasBrokenVersion: boolean;
+  hasEligibleUpgrade?: boolean;
   eligibleVersion?: Version;
   latestMajor?: Version;
   latestMinor?: Version;
@@ -56,6 +57,7 @@ const getDependencyFactory = (isDev: boolean) => (dependencies: Record<string, s
 });
 
 const isDevDependencyPredicate = (d: Dep) => d.isDev;
+const hasEligibleUpgradePredicate = (d: Dep) => d.hasEligibleUpgrade;
 
 const hasBrokenDependencyPredicate = (d: Dep) => d.hasBrokenVersion;
 
@@ -124,6 +126,7 @@ const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: s
 
     dep.eligibleVersion = eligibleVersion;
     const hasChange = eligibleVersion!.compare(dep.version) !== 0;
+    dep.hasEligibleUpgrade = hasChange;
 
     if (!hasChange) return null;
 
@@ -157,7 +160,7 @@ async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger
     return;
   }
 
-  let filteredUpgrade = deps;
+  let filteredUpgrade = deps.filter(hasEligibleUpgradePredicate);
 
   if (interactiveResponse === 'prompt-each') {
     process.stdout.write('\x1b[2J');
@@ -166,7 +169,7 @@ async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger
       message: 'Select',
       type: 'checkbox',
       choices: deps
-      .filter(dep => dep.eligibleVersion?.compare(dep.version) !== 0)
+      .filter(dep => dep.hasEligibleUpgrade)
       .map(dep => ({
         name: `${chalk.bold(dep.name)}: ${chalk.red(dep.version)} -> ${chalk.green(dep.eligibleVersion)}`,
         value: dep.name,
