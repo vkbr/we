@@ -163,6 +163,7 @@ export async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[],
   let filteredUpgrade = deps;
 
   if (interactiveResponse === 'prompt-each') {
+    process.stdout.write('\x1b[2J');
     const response = await prompt({
       name: 'choice',
       message: 'Select',
