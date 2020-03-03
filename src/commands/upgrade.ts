@@ -1,20 +1,13 @@
 import { Command, flags } from '@oclif/command';
 
-import {
-  enrichLatest,
-  hasBrokenDependencyPredicate,
-  isDevDependencyPredicate,
-  queryDependencies,
-  promptEligibileVersion,
-  doUpgrade,
-} from '../api/command';
+import doUpgrade, { Options } from '../api/upgrade';
 
 export default class Upgrade extends Command {
   static description = 'upgrade npm dependencies'
 
-  static examples = [
-    '$ we upgrade',
-  ];
+  // static examples = [
+  //   '$ we upgrade',
+  // ];
 
   static flags = {
     interactive: flags.boolean({ char: 'i' }),
@@ -27,23 +20,22 @@ export default class Upgrade extends Command {
     registry: flags.string({
       default: 'http://registry.npmjs.org/',
     }),
+    ignoreDev: flags.boolean({
+      char: 'D',
+      description: 'when true, the dev-dependencies will be ignored',
+      default: false,
+      exclusive: ['ignoreProd'],
+    }),
+    ignoreProd: flags.boolean({
+      char: 'P',
+      description: 'when true, the prod-dependencies(non-dev) will be ignored',
+      default: false,
+      exclusive: ['ignoreDev'],
+    }),
   };
 
   async run() {
     const { flags } = this.parse(Upgrade);
-    this.log('Upgrading');
-
-    const dependencies = queryDependencies();
-    const brokenDependencies = dependencies.filter(hasBrokenDependencyPredicate).length;
-
-    this.log(`Found ${dependencies.length} depdencies  (${
-      dependencies.filter(isDevDependencyPredicate).length} dev${
-      brokenDependencies ? `, ${brokenDependencies} broken` : ''}).`);
-
-    await enrichLatest(dependencies, flags.registry);
-
-    const upgradePrompt = await promptEligibileVersion(dependencies, flags.interactive, flags.mode, this.log);
-
-    await doUpgrade(upgradePrompt, dependencies, this.log);
+    await doUpgrade(flags as Options);
   }
 }

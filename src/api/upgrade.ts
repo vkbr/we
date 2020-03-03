@@ -55,11 +55,11 @@ const getDependencyFactory = (isDev: boolean) => (dependencies: Record<string, s
   };
 });
 
-export const isDevDependencyPredicate = (d: Dep) => d.isDev;
+const isDevDependencyPredicate = (d: Dep) => d.isDev;
 
-export const hasBrokenDependencyPredicate = (d: Dep) => d.hasBrokenVersion;
+const hasBrokenDependencyPredicate = (d: Dep) => d.hasBrokenVersion;
 
-export const queryDependencies = (): Dep[] => {
+const queryDependencies = (): Dep[] => {
   const packagePath = resolve('./package.json');
 
   if (!existsSync(packagePath)) {
@@ -74,7 +74,7 @@ export const queryDependencies = (): Dep[] => {
   ];
 };
 
-export const enrichLatest = async (deps: Dep[], registry: string): Promise<void> => {
+const enrichLatest = async (deps: Dep[], registry: string): Promise<void> => {
   const taskRunner = concurrent({ concurrency: 5, limit: deps.length });
 
   const client = axios.create({ baseURL: registry, responseType: 'json' });
@@ -114,11 +114,7 @@ export const enrichLatest = async (deps: Dep[], registry: string): Promise<void>
   progress.stop();
 };
 
-function getUpgradeRowMessage() {
-
-}
-
-export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: string, logger: Logger): Promise<UpgradePrompt> => {
+const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: string, logger: Logger): Promise<UpgradePrompt> => {
   const messages = deps.map(dep => {
     const eligibleVersion = type === 'pach' ?
       dep.latestPatch :
@@ -155,7 +151,7 @@ export const promptEligibileVersion = async (deps: Dep[], interactive: boolean, 
   return response.choice;
 };
 
-export async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger: Logger) {
+async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger: Logger) {
   if (interactiveResponse === 'abort') {
     return;
   }
@@ -188,3 +184,26 @@ export async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[],
 
   spawnSync('yarn', ['add', ...filteredUpgrade.map(pkg => `${pkg.name}@${pkg.eligibleVersion}`)]);
 }
+
+export interface Options {
+  interactive: boolean;
+  mode: 'major' | 'minor' | 'patch';
+  registry: string;
+}
+
+export default async (options: Options, logger: Logger = _ => _) => {
+  logger('Upgrading');
+
+  const dependencies = queryDependencies();
+  const brokenDependencies = dependencies.filter(hasBrokenDependencyPredicate).length;
+
+  logger(`Found ${dependencies.length} depdencies  (${
+    dependencies.filter(isDevDependencyPredicate).length} dev${
+    brokenDependencies ? `, ${brokenDependencies} broken` : ''}).`);
+
+  await enrichLatest(dependencies, options.registry);
+
+  const upgradePrompt = await promptEligibileVersion(dependencies, options.interactive, options.mode, logger);
+
+  await doUpgrade(upgradePrompt, dependencies, logger);
+};
