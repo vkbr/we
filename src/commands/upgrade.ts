@@ -13,7 +13,7 @@ export default class Upgrade extends Command {
     interactive: flags.boolean({ char: 'i' }),
     mode: flags.enum({
       char: 'm',
-      description: 'name to print',
+      description: 'limiting your upgrade to major/minor/patch versions',
       options: ['major', 'minor', 'patch'],
       default: 'minor',
     }),
