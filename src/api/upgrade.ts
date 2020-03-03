@@ -59,7 +59,7 @@ const isDevDependencyPredicate = (d: Dep) => d.isDev;
 
 const hasBrokenDependencyPredicate = (d: Dep) => d.hasBrokenVersion;
 
-const queryDependencies = (): Dep[] => {
+const queryDependencies = (options: Options): Dep[] => {
   const packagePath = resolve('./package.json');
 
   if (!existsSync(packagePath)) {
@@ -69,8 +69,8 @@ const queryDependencies = (): Dep[] => {
   const pkg = require(packagePath) as Package;
 
   return [
-    ...getDependencyFactory(false)(pkg.dependencies),
-    ...getDependencyFactory(true)(pkg.devDependencies),
+    ...getDependencyFactory(false)(pkg.dependencies).filter(pkg => !options.ignoreProd || isDevDependencyPredicate(pkg)),
+    ...getDependencyFactory(true)(pkg.devDependencies).filter(pkg => !options.ignoreDev || !isDevDependencyPredicate(pkg)),
   ];
 };
 
@@ -183,19 +183,25 @@ async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger
     return;
   }
 
-  spawnSync('yarn', ['add', ...filteredUpgrade.map(pkg => `${pkg.name}@${pkg.eligibleVersion}`)]);
+  const args = ['yarn', ['add', ...filteredUpgrade.map(pkg => `${pkg.name}@${pkg.eligibleVersion}`)], { stdio: 'inherit' }] as const;
+
+  logger(chalk.gray(`$ ${args[0]} ${args[1].join(' \\\n')}`));
+
+  spawnSync(...args);
 }
 
 export interface Options {
   interactive: boolean;
   mode: 'major' | 'minor' | 'patch';
   registry: string;
+  ignoreDev: boolean;
+  ignoreProd: boolean;
 }
 
 export default async (options: Options, logger: Logger = _ => _) => {
   logger('Upgrading');
 
-  const dependencies = queryDependencies();
+  const dependencies = queryDependencies(options);
   const brokenDependencies = dependencies.filter(hasBrokenDependencyPredicate).length;
 
   logger(`Found ${dependencies.length} depdencies  (${
