@@ -15,11 +15,11 @@ We automate
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g we
+$ npm install -g we-automate
 $ we COMMAND
 running command...
 $ we (-v|--version|version)
-we/0.0.1 darwin-x64 node-v10.15.3
+we-automate/0.0.1 darwin-x64 node-v10.15.3
 $ we --help [COMMAND]
 USAGE
   $ we COMMAND
@@ -28,28 +28,8 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`we hello [FILE]`](#we-hello-file)
 * [`we help [COMMAND]`](#we-help-command)
-
-## `we hello [FILE]`
-
-describe the command here
-
-```
-USAGE
-  $ we hello [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ we hello
-  hello world from ./src/hello.ts!
-```
-
-_See code: [src/commands/hello.ts](https://github.com/vkbr/we/blob/v0.0.1/src/commands/hello.ts)_
+* [`we upgrade`](#we-upgrade)
 
 ## `we help [COMMAND]`
 
@@ -67,4 +47,22 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+
+## `we upgrade`
+
+upgrade npm dependencies
+
+```
+USAGE
+  $ we upgrade
+
+OPTIONS
+  -D, --ignoreDev                 when true, the dev-dependencies will be ignored
+  -P, --ignoreProd                when true, the prod-dependencies(non-dev) will be ignored
+  -i, --interactive
+  -m, --mode=(major|minor|patch)  [default: minor] name to print
+  --registry=registry             [default: https://registry.npmjs.org/]
+```
+
+_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.0.1/src/commands/upgrade.ts)_
 <!-- commandsstop -->

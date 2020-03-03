@@ -48,7 +48,10 @@
   ],
   "homepage": "https://github.com/vkbr/we",
   "keywords": [
-    "oclif"
+    "we",
+    "we-automate",
+    "npm upgrade",
+    "yarn upgrade"
   ],
   "license": "MIT",
   "main": "lib/index.js",
