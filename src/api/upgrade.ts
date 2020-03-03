@@ -1,6 +1,7 @@
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { prompt } from 'inquirer';
+import { spawnSync } from 'child_process';
 import { default as axios } from 'axios';
 import chalk from 'chalk';
 import cliUx from 'cli-ux';
@@ -8,7 +9,6 @@ import concurrent from 'con-task-runner';
 import coerce from 'semver/functions/coerce';
 import gt from 'semver/functions/gt';
 import Semver from 'semver/classes/semver';
-import { spawnSync } from 'child_process';
 
 type UpgradePrompt = 'proceed' | 'prompt-each' | 'abort';
 type Logger = (...msg: string[]) => void;
@@ -88,7 +88,8 @@ const enrichLatest = async (deps: Dep[], registry: string): Promise<void> => {
 
   await taskRunner(async idx => {
     const dep = deps[idx];
-    const { data, status } = await client.get(dep.name) as { data: RegistryInfo; status: number };
+    const resp = await client.get(dep.name) as { data: RegistryInfo; status: number };
+    const { data, status } = resp;
 
     if (status === 200) {
       const versions = Object

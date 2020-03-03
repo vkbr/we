@@ -18,7 +18,7 @@ export default class Upgrade extends Command {
       default: 'minor',
     }),
     registry: flags.string({
-      default: 'http://registry.npmjs.org/',
+      default: 'https://registry.npmjs.org/',
     }),
     ignoreDev: flags.boolean({
       char: 'D',
@@ -36,6 +36,6 @@ export default class Upgrade extends Command {
 
   async run() {
     const { flags } = this.parse(Upgrade);
-    await doUpgrade(flags as Options);
+    await doUpgrade(flags as Options, this.log);
   }
 }
