@@ -19,7 +19,7 @@ $ npm install -g we-automate
 $ we COMMAND
 running command...
 $ we (-v|--version|version)
-we-automate/0.0.2 darwin-x64 node-v10.15.3
+we-automate/0.0.3 darwin-x64 node-v10.15.3
 $ we --help [COMMAND]
 USAGE
   $ we COMMAND
@@ -60,9 +60,9 @@ OPTIONS
   -D, --ignoreDev                 when true, the dev-dependencies will be ignored
   -P, --ignoreProd                when true, the prod-dependencies(non-dev) will be ignored
   -i, --interactive
-  -m, --mode=(major|minor|patch)  [default: minor] name to print
+  -m, --mode=(major|minor|patch)  [default: minor] limiting your upgrade to major/minor/patch versions
   --registry=registry             [default: https://registry.npmjs.org/]
 ```
 
-_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.0.2/src/commands/upgrade.ts)_
+_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.0.3/src/commands/upgrade.ts)_
 <!-- commandsstop -->
