@@ -4,9 +4,9 @@ we
 We automate
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/we.svg)](https://npmjs.org/package/we)
-[![Downloads/week](https://img.shields.io/npm/dw/we.svg)](https://npmjs.org/package/we)
-[![License](https://img.shields.io/npm/l/we.svg)](https://github.com/vkbr/we/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/we-automate.svg)](https://npmjs.org/package/we-automate)
+[![Downloads/week](https://img.shields.io/npm/dw/we-automate.svg)](https://npmjs.org/package/we-automate)
+[![License](https://img.shields.io/npm/l/we-automate.svg)](https://github.com/vkbr/we/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
