@@ -32,6 +32,12 @@ export default class Upgrade extends Command {
       default: false,
       exclusive: ['ignoreDev'],
     }),
+    engine: flags.enum({
+      char: 'e',
+      description: 'select engine to upgrade',
+      options: ['auto', 'yarn', 'npm'],
+      default: 'auto',
+    }),
   };
 
   async run() {

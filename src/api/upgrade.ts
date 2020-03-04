@@ -155,7 +155,17 @@ const promptEligibileVersion = async (deps: Dep[], interactive: boolean, type: s
   return response.choice;
 };
 
-async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger: Logger) {
+function detectEngine(): Engines {
+  if (existsSync(resolve('./package-lock.json'))) return 'npm';
+  return 'yarn';
+}
+
+const engineUpgradeCommand = {
+  npm: 'install',
+  yarn: 'add',
+} as const;
+
+async function doUpgrade(interactiveResponse: UpgradePrompt, options: Options, deps: Dep[], logger: Logger) {
   if (interactiveResponse === 'abort') {
     return;
   }
@@ -186,16 +196,21 @@ async function doUpgrade(interactiveResponse: UpgradePrompt, deps: Dep[], logger
     return;
   }
 
-  const args = ['yarn', ['add', ...filteredUpgrade.map(pkg => `${pkg.name}@${pkg.eligibleVersion}`)], { stdio: 'inherit' }] as const;
+  const engine = options.engine === 'auto' ? detectEngine() : options.engine;
+  const upgradeCmd = engineUpgradeCommand[engine];
+
+  const args = [engine, [upgradeCmd, ...filteredUpgrade.map(pkg => `${pkg.name}@${pkg.eligibleVersion}`)], { stdio: 'inherit' }] as const;
 
   logger(chalk.gray(`$ ${args[0]} ${args[1].join(' \\\n')}`));
 
   spawnSync(...args);
 }
 
+type Engines = 'yarn' | 'npm';
 export interface Options {
   interactive: boolean;
   mode: 'major' | 'minor' | 'patch';
+  engine: Engines | 'auto';
   registry: string;
   ignoreDev: boolean;
   ignoreProd: boolean;
@@ -215,5 +230,5 @@ export default async (options: Options, logger: Logger = _ => _) => {
 
   const upgradePrompt = await promptEligibileVersion(dependencies, options.interactive, options.mode, logger);
 
-  await doUpgrade(upgradePrompt, dependencies, logger);
+  await doUpgrade(upgradePrompt, options, dependencies, logger);
 };
