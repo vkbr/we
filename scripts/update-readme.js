@@ -1,4 +1,4 @@
-#! /usr/local/env node
+#!/usr/bin/env node
 
 const { readFileSync, writeFileSync } = require('fs');
 const { resolve } = require('path');
