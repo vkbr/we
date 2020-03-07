@@ -19,7 +19,7 @@ $ npm install -g we-automate
 $ we COMMAND
 running command...
 $ we (-v|--version|version)
-we-automate/0.2.0 darwin-x64 node-v12.16.1
+we-automate/0.2.1 darwin-x64 node-v12.16.1
 $ we --help [COMMAND]
 USAGE
   $ we COMMAND
@@ -51,19 +51,29 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3
 
 ## `we info [PACKAGENAME]`
 
+Get page info (and more comparision if available)
+
 ```
 USAGE
   $ we info [PACKAGENAME]
 
 OPTIONS
   --registry=registry  [default: https://registry.npmjs.org/]
+
+EXAMPLE
+
+  $ we info react
+  TypeScript is a language for application scale JavaScript development
+  Latest: 3.8.3 (1510 versions)
+  Minor upgrade available 3.3.0->3.8.3
+  Patch upgrade available 3.3.0->3.3.3
 ```
 
-_See code: [src/commands/info.ts](https://github.com/vkbr/we/blob/v0.2.0/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/vkbr/we/blob/v0.2.1/src/commands/info.ts)_
 
 ## `we upgrade`
 
-upgrade npm dependencies
+Upgrade npm dependencies
 
 ```
 USAGE
@@ -78,5 +88,5 @@ OPTIONS
   --registry=registry             [default: https://registry.npmjs.org/]
 ```
 
-_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.2.0/src/commands/upgrade.ts)_
+_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.2.1/src/commands/upgrade.ts)_
 <!-- commandsstop -->
