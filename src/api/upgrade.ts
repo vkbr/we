@@ -10,6 +10,13 @@ import coerce from 'semver/functions/coerce';
 import gt from 'semver/functions/gt';
 import Semver from 'semver/classes/semver';
 
+import {
+  semanticVersionExp,
+  getLatestMajorUpgrade,
+  getLatestMinorUpgrade,
+  getLatestPatchUpgrade,
+} from '../utils/version';
+
 type UpgradePrompt = 'proceed' | 'prompt-each' | 'abort';
 type Logger = (...msg: string[]) => void;
 
@@ -40,8 +47,6 @@ export interface Dep {
   latestMinor?: Version;
   latestPatch?: Version;
 }
-
-const semanticVersionExp = /^(\d\.){2}\d$/;
 
 const getDependencyFactory = (isDev: boolean) => (dependencies: Record<string, string>): Dep[] => Object
 .keys(dependencies)
@@ -99,14 +104,9 @@ const enrichLatest = async (deps: Dep[], registry: string): Promise<void> => {
       .filter(ver => ver.match(semanticVersionExp))
       .map(ver => coerce(ver)!);
 
-      dep.latestMajor = versions
-      .reduce((prev: Semver, next: Semver) => gt(next, prev) ? next : prev, dep.version!);
-
-      dep.latestMinor = versions
-      .reduce((prev: Semver, next: Semver) => next.major === prev.major && gt(next, prev) ? next : prev, dep.version!);
-
-      dep.latestPatch = versions
-      .reduce((prev: Semver, next: Semver) => next.major === prev.major && next.minor === prev.minor && next.patch > prev.patch ? next : prev, dep.version!);
+      dep.latestMajor = getLatestMajorUpgrade(dep.version, versions);
+      dep.latestMinor = getLatestMinorUpgrade(dep.version, versions);
+      dep.latestPatch = getLatestPatchUpgrade(dep.version, versions);
 
       progress.increment();
     } else {
