@@ -19,7 +19,7 @@ $ npm install -g we-automate
 $ we COMMAND
 running command...
 $ we (-v|--version|version)
-we-automate/0.1.1 darwin-x64 node-v10.15.3
+we-automate/0.2.0 darwin-x64 node-v12.16.1
 $ we --help [COMMAND]
 USAGE
   $ we COMMAND
@@ -29,6 +29,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`we help [COMMAND]`](#we-help-command)
+* [`we info [PACKAGENAME]`](#we-info-packagename)
 * [`we upgrade`](#we-upgrade)
 
 ## `we help [COMMAND]`
@@ -48,6 +49,18 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
+## `we info [PACKAGENAME]`
+
+```
+USAGE
+  $ we info [PACKAGENAME]
+
+OPTIONS
+  --registry=registry  [default: https://registry.npmjs.org/]
+```
+
+_See code: [src/commands/info.ts](https://github.com/vkbr/we/blob/v0.2.0/src/commands/info.ts)_
+
 ## `we upgrade`
 
 upgrade npm dependencies
@@ -65,5 +78,5 @@ OPTIONS
   --registry=registry             [default: https://registry.npmjs.org/]
 ```
 
-_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.1.1/src/commands/upgrade.ts)_
+_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.2.0/src/commands/upgrade.ts)_
 <!-- commandsstop -->
