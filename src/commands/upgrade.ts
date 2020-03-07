@@ -3,7 +3,7 @@ import { Command, flags } from '@oclif/command';
 import doUpgrade, { Options } from '../api/upgrade';
 
 export default class Upgrade extends Command {
-  static description = 'upgrade npm dependencies'
+  static description = 'Upgrade npm dependencies';
 
   // static examples = [
   //   '$ we upgrade',

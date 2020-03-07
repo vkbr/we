@@ -4,6 +4,8 @@ import infoApi, { Options, Args } from '../api/info';
 import chalk = require('chalk');
 
 export default class Info extends Command {
+	static description = 'Get page info (and more comparision if available)';
+
 	static flags = {
 		registry: flags.string({
       default: 'https://registry.npmjs.org/',
