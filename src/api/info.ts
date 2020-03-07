@@ -19,7 +19,7 @@ export default async (options: Options, { packageName }: Args, logger: (...msg: 
 	const { data, status } = await Axios.get(`${options.registry}/${packageName}`, { responseType: 'json' });
 
 	if (status === 200) {
-		logger(chalk.gray(data.description));
+		logger(chalk.gray(`(${chalk.italic(data.license)}) ${data.description}`));
 		logger(chalk.bold(`Latest: ${chalk.blue(data['dist-tags'].latest)} (${Object.keys(data.versions).length} versions)`));
 		try {
 			const pkgJson = require(resolve('./package.json'));
@@ -36,6 +36,8 @@ export default async (options: Options, { packageName }: Args, logger: (...msg: 
 				const minorUpgrade = getLatestMinorUpgrade(version, versions);
 				const patchUpgrade = getLatestPatchUpgrade(version, versions);
 
+				logger(`Current: ${version.raw}`);
+
 				if (compare(version, majorUpgrade) && compare(majorUpgrade, minorUpgrade) && compare(majorUpgrade, patchUpgrade)) {
 					logger(`Major upgrade available ${chalk.red(version)}->${chalk.green(majorUpgrade)}`);
 				}
@@ -46,6 +48,18 @@ export default async (options: Options, { packageName }: Args, logger: (...msg: 
 
 				if (compare(version, patchUpgrade)) {
 					logger(`Patch upgrade available ${chalk.red(version)}->${chalk.green(patchUpgrade)}`);
+				}
+
+				if (data.repository && data.repository.type) {
+					logger(chalk.gray(`${chalk.bold(`[${data.repository.type}]`)} ${data.repository.url}`));
+				}
+
+				if (data.homepage) {
+					logger(chalk.gray(`Homepate: ${data.homepage}`));
+				}
+
+				if (data.bugs && data.bugs.url) {
+					logger(chalk.gray(`🐞 ${data.bugs.url}`));
 				}
 			}
 		} catch (error) {
