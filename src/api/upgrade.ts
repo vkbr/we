@@ -7,7 +7,6 @@ import chalk from 'chalk';
 import cliUx from 'cli-ux';
 import concurrent from 'con-task-runner';
 import coerce from 'semver/functions/coerce';
-import gt from 'semver/functions/gt';
 import Semver from 'semver/classes/semver';
 
 import {

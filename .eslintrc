@@ -6,7 +6,7 @@
   "rules": {
     "semi": ["error", "always"],
     "object-curly-spacing": ["error", "always"],
-    "unicorn/no-hex-escape": false,
-    "unicorn/escape-case": false
+    "unicorn/no-hex-escape": 0,
+    "unicorn/escape-case": 0
   }
 }
