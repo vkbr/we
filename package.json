@@ -28,7 +28,7 @@
     "@types/node": "^10",
     "@types/semver": "^7.1.0",
     "chai": "^4",
-    "eslint": "^5.13",
+    "eslint": "^6.8.0",
     "eslint-config-oclif": "^3.1",
     "eslint-config-oclif-typescript": "^0.1",
     "globby": "^10",
@@ -70,7 +70,8 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "dev": "tsc --watch",
-    "deploy": "npm publish --registry=https://registry.npmjs.org/"
+    "deploy": "npm publish --registry=https://registry.npmjs.org/",
+    "lint": "eslint . --ext .ts --config .eslintrc"
   },
   "types": "lib/index.d.ts"
 }
