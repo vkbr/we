@@ -47,7 +47,6 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
 ## `we info [PACKAGENAME]`
 
@@ -69,7 +68,6 @@ EXAMPLE
   Patch upgrade available 3.3.0->3.3.3
 ```
 
-_See code: [src/commands/info.ts](https://github.com/vkbr/we/blob/v0.2.4/src/commands/info.ts)_
 
 ## `we upgrade`
 
@@ -88,5 +86,4 @@ OPTIONS
   --registry=registry             [default: https://registry.npmjs.org/]
 ```
 
-_See code: [src/commands/upgrade.ts](https://github.com/vkbr/we/blob/v0.2.4/src/commands/upgrade.ts)_
 <!-- commandsstop -->

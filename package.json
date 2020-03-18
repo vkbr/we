@@ -64,7 +64,7 @@
   },
   "repository": "vkbr/we",
   "scripts": {
-    "postpack": "rm -f oclif.manifest.json && rm package-lock.json",
+    "postpack": "rm -f oclif.manifest.json && (rm package-lock.json || true)",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme && ./scripts/update-readme.js",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
