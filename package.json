@@ -1,7 +1,7 @@
 {
   "name": "we-automate",
   "description": "We automate",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "author": "Vivek Brohma",
   "bin": {
     "we": "./bin/run"
